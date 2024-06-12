@@ -1,2 +1,3 @@
 #!/bin/bash
-echo "Current Directory:" pwd
+echo "Current Directory:"
+pwd

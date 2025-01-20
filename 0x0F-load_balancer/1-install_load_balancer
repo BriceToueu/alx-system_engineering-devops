@@ -38,7 +38,7 @@ listen hbnb
     option httpclose
     option forwardfor
     server 806487-web-01 3.85.175.142:80 check
-    server 375-web-02 100.26.229.123:80 check
+    server 806487-web-02 100.26.229.123:80 check
 " >> /etc/haproxy/haproxy.cfg
 
 service haproxy start

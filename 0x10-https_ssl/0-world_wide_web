@@ -33,4 +33,3 @@ else
         get_subdomain_info $domain $sub
     done
 fi
-

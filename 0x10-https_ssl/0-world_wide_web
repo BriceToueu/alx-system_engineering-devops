@@ -1,35 +1,17 @@
 #!/usr/bin/env bash
+# displays information about subdomains
 
-# Function to get subdomain information
-get_subdomain_info() {
-    local domain=$1
-    local subdomain=$2
-    local result=$(dig +short $subdomain.$domain)
-    local record_type="A"
-
-    if [ -z "$result" ]; then
-        echo "No record found for $subdomain.$domain"
-    else
-        echo "The subdomain $subdomain is a $record_type record and points to $result"
+sub_info () {
+    
+    if [ "$#" -eq 2 ]; then
+        dig $2.$1 | grep -A1 'ANSWER SECTION:' | tr '\n' ' ' | awk '{split($0,a," "); split(a[4],b,"."); printf "The subdomain %s is a %s record and points to %s\n",b[1], a[7], a[8]}'
+    elif [ "$#" -eq 1 ]; then
+        dig www.$1 | grep -A1 'ANSWER SECTION:' | tr '\n' ' ' | awk '{split($0,a," "); printf "The subdomain www is a %s record and points to %s\n", a[7], a[8]}'
+        dig lb-01.$1 | grep -A1 'ANSWER SECTION:' | tr '\n' ' ' | awk '{split($0,a," "); printf "The subdomain lb-01 is a %s record and points to %s\n", a[7], a[8]}'
+        dig web-01.$1 | grep -A1 'ANSWER SECTION:' | tr '\n' ' ' | awk '{split($0,a," "); printf "The subdomain web-01 is a %s record and points to %s\n", a[7], a[8]}'
+        dig web-02.$1 | grep -A1 'ANSWER SECTION:' | tr '\n' ' ' | awk '{split($0,a," "); printf "The subdomain web-02 is a %s record and points to %s\n", a[7], a[8]}'
     fi
+
 }
 
-# Check if the domain parameter is provided
-if [ -z "$1" ]; then
-    echo "Usage: $0 <domain> [subdomain]"
-    exit 1
-fi
-
-# Domain and optional subdomain parameters
-domain=$1
-subdomain=$2
-
-# If subdomain is provided, display information for the specified subdomain
-if [ -n "$subdomain" ]; then
-    get_subdomain_info $domain $subdomain
-else
-    # Display information for predefined subdomains
-    for sub in www lb-01 web-01 web-02; do
-        get_subdomain_info $domain $sub
-    done
-fi
+sub_info $1 $2

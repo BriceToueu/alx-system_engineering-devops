@@ -4,9 +4,9 @@
 #+    Distributes requests using a round-robin algorithm.
 
 apt-get install -y software-properties-common
-add-apt-repository -y ppa:vbernat/haproxy-1.8
+add-apt-repository -y  ppa:vbernat/haproxy-2.6
 apt-get update
-apt-get install -y haproxy=1.8.\*
+apt-get install -y haproxy=2.6.\*
 
 echo "ENABLED=1" >> /etc/default/haproxy
 mv /etc/haproxy/haproxy.cfg{,.original}
@@ -30,15 +30,15 @@ defaults
     timeout server  10000
 
 listen hbnb
-    bind 0.0.0.0:80
+    bind *:541
     mode http
     stats enable
     stats uri /haproxy?stats
     balance roundrobin
     option httpclose
     option forwardfor
-    server 806487-web-01 54.242.195.119:80 check
-    server 806487-web-02 34.232.69.216:80 check
+    server 806487-web-01 3.90.70.20:80 check
+    server 806487-web-02 54.159.3.166:80 check
 " >> /etc/haproxy/haproxy.cfg
 
 service haproxy start

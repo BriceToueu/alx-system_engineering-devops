@@ -12,33 +12,41 @@ echo "ENABLED=1" >> /etc/default/haproxy
 mv /etc/haproxy/haproxy.cfg{,.original}
 touch /etc/haproxy/haproxy.cfg
 
-printf %s "global
-    log 127.0.0.1 local0 notice
-    maxconn 2000
-    user haproxy
-    group haproxy
-
+printf %s "
 defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    retries 3
-    option redispatch
-    timeout connect  5000
-    timeout client  10000
-    timeout server  10000
+        log     global
+        mode    http
+        option  httplog
+        option  dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+        errorfile 400 /etc/haproxy/errors/400.http
+        errorfile 403 /etc/haproxy/errors/403.http
+        errorfile 408 /etc/haproxy/errors/408.http
+        errorfile 500 /etc/haproxy/errors/500.http
+        errorfile 502 /etc/haproxy/errors/502.http
+        errorfile 503 /etc/haproxy/errors/503.http
+        errorfile 504 /etc/haproxy/errors/504.http
 
-listen hbnb
-    bind *:541
-    mode http
-    stats enable
+frontend haproxy-main
+    bind *:80
     stats uri /haproxy?stats
+    default_backend apache_webservers
+
+backend apache_webservers
     balance roundrobin
-    option httpclose
-    option forwardfor
-    server 806487-web-01 3.90.70.20:80 check
-    server 806487-web-02 54.159.3.166:80 check
+    server 806487-web-01        3.90.70.20:80 check
+    server 806487-web-02        54.159.3.166:80 check
+
+listen stats
+    bind :8080
+    stats enable
+    stats uri /
+    stats refresh 5s
+    stats realm Haproxy\ Statistics
+    stats auth bricehosting:m0d1fyth15
+    default_backend apache_webservers
 " >> /etc/haproxy/haproxy.cfg
 
 service haproxy start
